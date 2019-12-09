@@ -10,19 +10,10 @@ export const getRandomDate = (days) => {
 };
 
 export const formatDate = (date) => {
-  let dd = date.getDate();
-  if (dd < 10) {
-    dd = `0` + dd;
-  }
-  let mm = date.getMonth() + 1;
-  if (mm < 10) {
-    mm = `0` + mm;
-  }
-  let yy = date.getFullYear() % 100;
-  if (yy < 10) {
-    yy = `0` + yy;
-  }
-  return dd + `.` + mm + `.` + yy;
+  let day = date.getDate();
+  let month = date.getMonth() + 1;
+  let year = date.getFullYear() % 100;
+  return `${day < 10 ? `0${day}` : day}.${month < 10 ? `0${month}` : month}.${year < 10 ? `0${year}` : year}`;
 };
 
 export const getRandomElement = (array) => {
