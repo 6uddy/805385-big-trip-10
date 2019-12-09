@@ -1,8 +1,7 @@
 import {createElement} from "./../util.js";
 
-export default class Menu {
-  constructor(values) {
-    this._values = values;
+export default class EventsList {
+  constructor() {
     this._element = null;
   }
 
@@ -20,9 +19,7 @@ export default class Menu {
   }
 
   getTemplate() {
-    return `<nav class="trip-controls__trip-tabs  trip-tabs">
-    ${this._values.map((value) => `<a class="trip-tabs__btn  ${value.active ? `trip-tabs__btn--active` : ``}" href="#">${value.title}</a>`).join(``)}
-
-    </nav>`;
+    return `<ul class="trip-events__list">
+    </ul>`;
   }
 }

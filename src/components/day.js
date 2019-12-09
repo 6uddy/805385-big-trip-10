@@ -1,19 +1,33 @@
-import {getEditEventTemplate} from "./edit-event";
-import {getEventTemplate} from "./event";
+import {createElement} from "./../util.js";
 
-export const getDayTemplate = (dayIndex, date, events, transfer, activity, cities, options) => `<li class="trip-days__item  day day--${dayIndex + 1}">
-<div class="day__info">
-  <span class="day__counter">${dayIndex + 1}</span>
-  <time class="day__date" datetime="${new Date(date).toString().slice(4, 11)}">${new Date(date).toString().slice(4, 11)}</time>
-</div>
-
-<ul class="trip-events__list">
-${events.map((event, index) => {
-  if (dayIndex === 0 && index === 0) {
-    return getEditEventTemplate(event, transfer, activity, cities, options);
+export default class Day {
+  constructor(date, index) {
+    this._dayIndex = index + 1;
+    this._date = new Date(date);
+    this._element = null;
   }
-  return getEventTemplate(event);
-}).join(`
-`)}
-</ul>
-</li>`;
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    if (this._element) {
+      this._element = null;
+    }
+  }
+
+  getTemplate() {
+    return `<li class="trip-days__item  day">
+    <div class="day__info">
+      <span class="day__counter">${this._dayIndex}</span>
+      <time class="day__date" datetime="${this._date.toISOString().slice(0, 10)}">${this._date.toString().slice(4, 10)}</time>
+    </div>
+    <ul class="trip-events__list">
+    </ul>
+    </li>`;
+  }
+}
