@@ -1,8 +1,10 @@
-import {getRandomElement} from "./util.js";
-import {getRandomArray} from "./util.js";
-import {getPhotos} from "./util.js";
-import {getRandomInteger} from "./util.js";
-import {getRandomDate} from "./util.js";
+import {
+  getRandomElement,
+  getRandomArray,
+  getPhotos,
+  getRandomInteger,
+  getRandomDate
+} from "./utils/common.js";
 
 const DAYS_COUNT = 5;
 
@@ -90,9 +92,26 @@ export const menuValues = [
 
 export const filtersNames = [`Everything`, `Future`, `Past`];
 
-export const getUniqDates = (eventsData) => {
-  return Array.from(new Set(eventsData.map((eventData) => eventData.date)));
-};
 export const getCities = (eventsData) => {
   return eventsData.map((event) => event.city);
+};
+
+export const getEventsInDays = (eventsData) => {
+  return eventsData.reduce((acc, event) => {
+    const date = new Date(event.start).toDateString();
+    if (acc[date]) {
+      acc[date].push(event);
+    } else {
+      acc[date] = [event];
+    }
+    return acc;
+  }, {});
+};
+
+export const getPrice = (eventsData) => {
+  const tripPrices = eventsData.map((event) => event.price).reduce((a, b) => a + b);
+  const offersPrices = eventsData.map((event) => Array.from(event.offers).reduce((a, b) => {
+    return a + b.price;
+  }, 0)).reduce((a, b) => a + b);
+  return tripPrices + offersPrices;
 };

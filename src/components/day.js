@@ -1,23 +1,10 @@
-import {createElement} from "./../util.js";
+import AbstractComponent from "./abstract-component.js";
 
-export default class Day {
+export default class Day extends AbstractComponent {
   constructor(date, index) {
+    super();
     this._dayIndex = index + 1;
     this._date = new Date(date);
-    this._element = null;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    if (this._element) {
-      this._element = null;
-    }
   }
 
   getTemplate() {

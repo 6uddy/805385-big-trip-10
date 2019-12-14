@@ -1,16 +1,27 @@
-import {createElement, formatDate} from "./../util.js";
+import AbstractComponent from "./abstract-component.js";
 
-export default class EditEvent {
-  constructor({
-                type,
-                city,
-                price,
-                description,
-                start,
-                end,
-                offers,
-                urls
-              }, typesOfTransfer, typesOfActivity, cities, options) {
+import {formatDate} from "../utils/common.js";
+
+import {
+  TYPES_OF_TRANSFER,
+  TYPES_OF_ACTIVITY,
+  CITIES,
+  OPTIONS
+} from "./../data.js";
+
+export default class EditEvent extends AbstractComponent {
+  constructor(
+      {
+        type,
+        city,
+        price,
+        description,
+        start,
+        end,
+        offers,
+        urls
+      }) {
+    super();
     this._type = type;
     this._city = city;
     this._price = price;
@@ -21,24 +32,6 @@ export default class EditEvent {
     this._endTime = new Date(end).toTimeString().slice(0, 5);
     this._offers = offers;
     this._urls = urls;
-    this._typesOfTransfer = typesOfTransfer;
-    this._typesOfActivity = typesOfActivity;
-    this._cities = cities;
-    this._options = options;
-    this._element = null;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    if (this._element) {
-      this._element = null;
-    }
   }
 
   getTemplate() {
@@ -55,14 +48,14 @@ export default class EditEvent {
           <div class="event__type-list">
           <fieldset class="event__type-group">
           <legend class="visually-hidden">Transfer</legend>
-          ${this._typesOfTransfer.map((transferType) => `<div class="event__type-item">
+          ${TYPES_OF_TRANSFER.map((transferType) => `<div class="event__type-item">
           <input id="event-type-${transferType.split(` `)[0].toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${transferType.split(` `)[0].toLowerCase()}">
           <label class="event__type-label  event__type-label--${transferType.split(` `)[0].toLowerCase()}" for="event-type-${transferType.split(` `)[0].toLowerCase()}-1">${transferType.split(` `)[0]}</label>
         </div>`).join(``)}
         </fieldset>
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Activity</legend>
-          ${this._typesOfActivity.map((activityType) => `<div class="event__type-item">
+          ${TYPES_OF_ACTIVITY.map((activityType) => `<div class="event__type-item">
           <input id="event-type-${activityType.split(` `)[0].toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${activityType.split(` `)[0].toLowerCase()}">
           <label class="event__type-label  event__type-label--${activityType.split(` `)[0].toLowerCase()}" for="event-type-${activityType.split(` `)[0].toLowerCase()}-1">${activityType.split(` `)[0]}</label>
         </div>`).join(``)}
@@ -76,7 +69,7 @@ export default class EditEvent {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${this._cities.map((CITY) => `<option value="${CITY}"></option>`)}
+          ${CITIES.map((CITY) => `<option value="${CITY}"></option>`)}
         </datalist>
       </div>
 
@@ -121,7 +114,7 @@ export default class EditEvent {
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-          ${this._options.map((option) => `<div class="event__offer-selector">
+          ${OPTIONS.map((option) => `<div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.id}-1" type="checkbox" name="event-offer-${option.id}" ${(Array.from(this._offers).filter((offer) => offer.option === option.option)).length > 0 ? `checked` : ``}>
               <label class="event__offer-label" for="event-offer-${option.id}-1">
                 <span class="event__offer-title">${option.option}</span>

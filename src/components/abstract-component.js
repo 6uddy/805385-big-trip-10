@@ -1,7 +1,10 @@
-import {createElement} from "./../util.js";
+import {createElement} from "../utils/render.js";
 
-export default class EventsList {
+export default class AbstractComponent {
   constructor() {
+    if (new.target === AbstractComponent) {
+      throw new Error(`Can't instantiate AbstractComponent, only concrete one.`);
+    }
     this._element = null;
   }
 
@@ -19,7 +22,6 @@ export default class EventsList {
   }
 
   getTemplate() {
-    return `<ul class="trip-events__list">
-    </ul>`;
+    throw new Error(`Abstract method not implemented: getTemplate`);
   }
 }
