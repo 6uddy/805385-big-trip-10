@@ -1,15 +1,31 @@
-import AbstractComponent from "./abstract-component.js";
+import AbstractComponent from "./abstract-component";
+
 
 export default class Menu extends AbstractComponent {
-  constructor(values) {
+  constructor(menuTabs) {
     super();
-    this._values = values;
+    this._menuTabs = menuTabs;
   }
 
   getTemplate() {
-    return `<nav class="trip-controls__trip-tabs  trip-tabs">
-    ${this._values.map((value) => `<a class="trip-tabs__btn  ${value.active ? `trip-tabs__btn--active` : ``}" href="#">${value.title}</a>`).join(``)}
-
-    </nav>`;
+    return createMenuTemplate(this._menuTabs);
   }
 }
+
+const createMenuTemplate = (menuTabs) => {
+  return (
+    `<nav class="trip-controls__trip-tabs  trip-tabs">
+     <h2 class="visually-hidden">Switch trip view</h2>
+       ${menuTabs
+      .map(({name, isActive}) => {
+        return (
+          `<a class="trip-tabs__btn ${isActive ? `trip-tabs__btn--active` : ``}" href="#">${name}</a>`
+        );
+      })
+      .join(`\n`)
+    }
+     </nav>`
+  );
+};
+
+

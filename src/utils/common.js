@@ -1,40 +1,36 @@
-const TIME_IN_MS = 60 * 60 * 24 * 1000;
-
-export const getRandomInteger = (min, max) => {
-  const rand = min + Math.random() * (max + 1 - min);
-  return Math.floor(rand);
+const castTimeFormat = (value) => {
+  return value < 10 ? `0${value}` : String(value);
 };
 
-export const getRandomDate = (days) => {
-  return Date.now() + (getRandomInteger(0, (days * 24))) * TIME_IN_MS / 24;
+const formatTime = (date) => {
+  const hours = castTimeFormat(date.getHours() % 12);
+  const minutes = castTimeFormat(date.getMinutes());
+
+  return `${hours}:${minutes}`;
 };
 
-export const formatDate = (date) => {
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear() % 100;
-  return `${day < 10 ? `0${day}` : day}.${month < 10 ? `0${month}` : month}.${year < 10 ? `0${year}` : year}`;
+const formatDate = (date) => {
+  const years = castTimeFormat(date.getFullYear());
+  const months = castTimeFormat(date.getMonth());
+  const days = castTimeFormat(date.getDate());
+  const hours = castTimeFormat(date.getHours() % 12);
+  const minutes = castTimeFormat(date.getMinutes());
+
+  return `${days}/${months}/${years.substr(-2)} ${hours}:${minutes}`;
 };
 
-export const getRandomElement = (array) => {
-  return array[getRandomInteger(0, array.length - 1)];
-};
-
-export const getPhotos = (min, max) => {
-  const newArray = [];
-  const newArrayLength = getRandomInteger(min, max);
-  for (let i = 0; i < newArrayLength; i++) {
-    newArray.push(`http://picsum.photos/300/150?r=${Math.random()}`);
+const getDuration = (start, end) => {
+  let duration = {};
+  duration.hours = end.getHours() - start.getHours();
+  duration.minutes = end.getMinutes() - start.getMinutes();
+  if (duration.minutes < 0) {
+    duration.hours = duration.hours - 1;
+    duration.minutes += 60;
   }
-  return newArray;
-};
-
-export const getRandomArray = (min, max, array) => {
-  const newArray = [];
-  const newArrayLength = getRandomInteger(min, max);
-  for (let i = 0; i < newArrayLength; i++) {
-    newArray.push(getRandomElement(array));
+  if (duration.hours < 0) {
+    duration.hours = Math.abs(duration.hours);
   }
-  return newArray;
+  return duration.hours + `H` + ` ` + duration.minutes + `M`;
 };
 
+export {formatTime, getDuration, formatDate};

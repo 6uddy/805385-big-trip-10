@@ -1,64 +1,69 @@
-import AbstractComponent from "./abstract-component.js";
+import {formatTime, getDuration} from "../utils/common";
+import AbstractComponent from "./abstract-component";
 
-const OFFERS_COUNT = 3;
+const createOfferMarkup = (offers) => {
+  return offers
+    .map(({name, price}) => {
+      return (
+        `<li class="event__offer">
+          <span class="event__offer-title">${name}</span>
+          +
+          &euro;<span class="event__offer-price">${price}</span>
+         </li>`
+      );
+    })
+    .join(`\n`);
+};
+
+const createEventTemplate = (event) => {
+
+  const offerList = createOfferMarkup(event.offers);
+
+  const startTime = new Date(event.startTime);
+  const endTime = new Date(event.endTime);
+
+  return (
+    `<li class="trip-events__item">
+        <div class="event">
+          <div class="event__type">
+            <img class="event__type-icon" width="42" height="42" src="img/icons/${event.type}.png" alt="Event type icon">
+          </div>
+          <h3 class="event__title">${event.type} to ${event.destination}</h3>
+          <div class="event__schedule">
+            <p class="event__time">
+              <time class="event__start-time" datetime="${event.startTime}">${formatTime(startTime)}</time>
+              &mdash;
+              <time class="event__end-time" datetime="${event.endTime}">${formatTime(endTime)}</time>
+            </p>
+            <p class="event__duration">${getDuration(startTime, endTime)}</p>
+          </div>
+          <p class="event__price">
+            &euro;&nbsp;<span class="event__price-value">${event.price}</span>
+          </p>
+          <h4 class="visually-hidden">Offers:</h4>
+          <ul class="event__selected-offers">
+            ${offerList}
+          </ul>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
+        </div>
+    </li>`
+  );
+};
+
 export default class Event extends AbstractComponent {
-  constructor(
-      {
-        type,
-        city,
-        price,
-        start,
-        end,
-        hours,
-        minutes,
-        offers
-      }) {
+  constructor(events) {
     super();
-    this._type = type;
-    this._city = city;
-    this._price = price;
-    this._start = new Date(start);
-    this._end = new Date(end);
-    this._hours = hours;
-    this._minutes = minutes;
-    this._offers = offers;
+    this._events = events;
   }
 
   getTemplate() {
-    return `<li class="trip-events__item">
-    <div class="event">
-      <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${this._type.split(` `)[0].toLowerCase()}.png" alt="Event type icon">
-      </div>
-      <h3 class="event__title">${this._type} ${this._city}</h3>
+    return createEventTemplate(this._events);
+  }
 
-      <div class="event__schedule">
-        <p class="event__time">
-          <time class="event__start-time" datetime="${this._start.toString().slice(4, 21)}">${this._start.toTimeString().slice(0, 5)}</time>
-          &mdash;
-          <time class="event__end-time" datetime="${this._end.toString().slice(4, 21)}">${this._end.toTimeString().slice(0, 5)}</time>
-        </p>
-        <p class="event__duration">${this._hours}H ${this._minutes}M</p>
-      </div>
-
-      <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${this._price}</span>
-      </p>
-
-      <h4 class="visually-hidden">Offers:</h4>
-      <ul class="event__selected-offers">
-      ${Array.from(this._offers).slice(0, OFFERS_COUNT).map((offer) => `<li class="event__offer">
-      <span class="event__offer-title">${offer.option}</span>
-      &plus;
-      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-     </li>`).join(``)}
-      </ul>
-
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
-    </div>
-  </li>`;
-
+  setEditButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 }

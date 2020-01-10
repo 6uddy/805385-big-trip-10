@@ -1,46 +1,32 @@
-const EVENT_COUNT = 20;
+import {events} from "./mock/event";
+import {menu} from "./mock/menu";
+import {filters} from "./mock/filter";
+import {render, RenderPosition} from "./utils/render";
 
-import Menu from './components/menu.js';
-import Filters from './components/filters.js';
-import TripInfo from './components/trip-info.js';
-import Sort from './components/sort.js';
-import DaysList from './components/days-list.js';
-import TripController from './controller/trip-controller.js'
-import AddEvent from './components/add-event.js';
-import {RenderPosition, render} from "./utils/render.js";
+import Menu from "./components/menu"
+import Filters from "./components/filters"
+import Route from "./components/route"
+import TripController from "./controller/trip-controller";
 
-import {
-  getEventsData,
-  menuValues,
-  filtersNames,
-  getPrice,
-  getEventsInDays,
-  getCities,
-} from "./data.js";
+const headerControls = document.querySelector(`.trip-controls`);
 
-const eventsData = getEventsData(EVENT_COUNT);
-const tripCities = getCities(eventsData);
-const eventsInDays = getEventsInDays(eventsData);
+render(headerControls, new Menu(menu), RenderPosition.BEFOREEND);
+render(headerControls, new Filters(filters), RenderPosition.BEFOREEND);
 
-const tripControls = document.querySelector(`.trip-controls`);
-const tripEvents = document.querySelector(`.trip-events`);
-const tripInfo = document.querySelector(`.trip-main__trip-info`);
+const tripBoard = document.querySelector(`.trip-events`);
 
-const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`span`);
-tripInfoCost.innerHTML = getPrice(eventsData);
+const trip = new TripController(tripBoard);
 
-render(tripControls.querySelector(`h2`), new Menu(menuValues));
-render(tripControls, new Filters(filtersNames));
-render(tripEvents.querySelector(`h2`), new Sort(), RenderPosition.AFTEREND);
+trip.render(events);
 
+const tripRoute = document.querySelector(`.trip-info`);
 
-if (eventsData.length > 0) {
-  render(tripInfo, new TripInfo(tripCities, eventsData), RenderPosition.AFTERBEGIN);
-  const daysList = new DaysList();
-  render(tripEvents, daysList);
-  const tripController = new TripController(daysList);
-  tripController.render(eventsInDays);
-} else {
-  render(tripEvents, new AddEvent());
-}
+render(tripRoute, new Route(events), RenderPosition.AFTERBEGIN);
+
+const tripCost = document.querySelector(`.trip-info__cost-value`);
+
+tripCost.textContent = events.reduce((sum, it) => {
+  return sum + parseFloat(it.price);
+}, 0);
+
 
