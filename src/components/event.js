@@ -19,9 +19,6 @@ const createEventTemplate = (event) => {
 
   const offerList = createOfferMarkup(event.offers);
 
-  const startTime = new Date(event.startTime);
-  const endTime = new Date(event.endTime);
-
   return (
     `<li class="trip-events__item">
         <div class="event">
@@ -53,13 +50,13 @@ const createEventTemplate = (event) => {
 };
 
 export default class Event extends AbstractComponent {
-  constructor(events) {
+  constructor(event) {
     super();
-    this._events = events;
+    this._event = event;
   }
 
   getTemplate() {
-    return createEventTemplate(this._events);
+    return createEventTemplate(this._event);
   }
 
   setEditButtonClickHandler(handler) {

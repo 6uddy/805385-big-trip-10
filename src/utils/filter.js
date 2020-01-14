@@ -1,5 +1,10 @@
-import {FilterType} from "../utils/filter";
 import {isFutureDate, isOverdueDate} from "./common";
+
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
 
 const getFutureEvents = (events, date) => {
   return events.filter((event) => {

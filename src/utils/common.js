@@ -7,6 +7,10 @@ const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
 
+const getTripDates = (cards) => {
+  return new Set(cards.map((it) => new Date(it.startTime).toDateString()));
+};
+
 const setDateTimeAttr = (date) => {
   return moment(date).format(moment.HTML5_FMT.DATETIME_LOCAL);
 };
@@ -25,4 +29,13 @@ const getDuration = (start, end) => {
   }
 };
 
-export {formatTime, getDuration, setDateTimeAttr};
+const isOverdueDate = (startTime, date) => {
+  return startTime < Date.parse(date);
+};
+
+const isFutureDate = (startTime, date) => {
+  return startTime >= Date.parse(date);
+};
+
+export {formatTime, getDuration, setDateTimeAttr, isOverdueDate, isFutureDate, getTripDates};
+
