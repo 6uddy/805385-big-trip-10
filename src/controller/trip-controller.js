@@ -54,13 +54,14 @@ export default class TripController {
   }
 
   render() {
+    const container = this._container.getElement();
     const events = this._pointModel.getPoints();
 
     if (!events.length) {
-      render(this._container, this._noEvents, RenderPosition.BEFOREEND);
+      render(container, this._noEvents, RenderPosition.BEFOREEND);
     }
-    render(this._container, this._sort, RenderPosition.BEFOREEND);
-    render(this._container, this._tripList, RenderPosition.BEFOREEND);
+    render(container, this._sort, RenderPosition.BEFOREEND);
+    render(container, this._tripList, RenderPosition.BEFOREEND);
 
     this._showedEventControllers = renderEvents(
       this._tripList,
@@ -79,8 +80,16 @@ export default class TripController {
       return;
     }
 
-    this._creatingEvent = new PointController(this._container, this._onDataChange, this._onViewChange);
+    this._creatingEvent = new PointController(this._container.getElement(), this._onDataChange, this._onViewChange);
     this._creatingEvent.render(EmptyEvent, PointControllerMode.ADDING);
+  }
+
+  show() {
+    this._container.show();
+  }
+
+  hide() {
+    this._container.hide();
   }
 
   _onDataChange(pointController, oldData, newData) {
