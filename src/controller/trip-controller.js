@@ -32,9 +32,11 @@ const renderEvents = (container, events, onDataChange, onViewChange, mode, isSor
 };
 
 export default class TripController {
-  constructor(container, pointModel) {
+  constructor(container, pointModel, api) {
     this._container = container;
     this._pointModel = pointModel;
+    this._api = api;
+
 
     this._showedEventControllers = [];
     this._creatingEvent = null;

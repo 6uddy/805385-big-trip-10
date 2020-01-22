@@ -2,17 +2,17 @@ import flatpickr from "flatpickr";
 import AbstractSmartComponent from "./abstract-smart-component";
 import moment from "moment";
 import {additionalOptions, generateDescription, generateOptions, tripDescription} from "../mock/event";
+import Store from "../models/store";
 
 
-const createOfferMarkup = (offers) => {
+const createOfferMarkup = (event, offers) => {
   return offers
-    .map(({type, name, price, isChecked}) => {
+    .map(({title, price}, index) => {
       return (
         `<div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-1" type="checkbox" name="event-offer-${type}"
-            ${isChecked ? `checked` : ``}>
-            <label class="event__offer-label" for="event-offer-${type}-1">
-                <span class="event__offer-title">${name}</span>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${event.type}-${index + 1}" type="checkbox" name="event-offer-${event.type}">
+            <label class="event__offer-label" for="event-offer-${event.type}-${index + 1}">
+                <span class="event__offer-title">${title}</span>
                 &plus;
                 &euro;&nbsp;<span class="event__offer-price">${price}</span>
              </label>
@@ -21,9 +21,8 @@ const createOfferMarkup = (offers) => {
     })
     .join(`\n`);
 };
-
 const createEventEditTemplate = (event) => {
-  const offerList = createOfferMarkup(event.offers);
+  const offerList = createOfferMarkup(event, event.offers);
   return (
     `<form class="event  event--edit" action="#" method="post">
                     <header class="event__header">
@@ -99,7 +98,7 @@ const createEventEditTemplate = (event) => {
                         <label class="event__label  event__type-output" for="event-destination-1">
                           ${event.type} at
                         </label>
-                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${event.destination}" list="destination-list-1">
+                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${event.destination.name}" list="destination-list-1">
                         <datalist id="destination-list-1">
                           <option value="Amsterdam"></option>
                           <option value="Geneva"></option>
@@ -152,34 +151,16 @@ const createEventEditTemplate = (event) => {
                       </section>` : ``}
                     ${event.destination ? `<section class="event__section  event__section--destination">
                         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                        <p class="event__destination-description">${event.description}</p>
-                        <div class="event__photos-container">
+                        <p class="event__destination-description">${event.destination.description}</p>
+                        ${event.destination.pictures ? `<div class="event__photos-container">
                           <div class="event__photos-tape">
-                            <img class="event__photo" src="http://picsum.photos/300/150?r=${Math.random()}" alt="Event photo">
-                            <img class="event__photo" src="http://picsum.photos/300/150?r=${Math.random()}" alt="Event photo">
-                            <img class="event__photo" src="http://picsum.photos/300/150?r=${Math.random()}" alt="Event photo">
-                            <img class="event__photo" src="http://picsum.photos/300/150?r=${Math.random()}" alt="Event photo">
-                            <img class="event__photo" src="http://picsum.photos/300/150?r=${Math.random()}" alt="Event photo">
+                            ${event.destination.pictures.map((it) => (`<img class="event__photo" src="${it.src}" alt="${it.description}">`))}
                           </div>
-                        </div>
+                        </div>` : ``}
                       </section>` : ``}
                     </section>` : ``}
                   </form>`
   );
-};
-
-const parseFormData = (formData) => {
-  const now = new Date().toDateString();
-  const startTime = formData.get(`event-start-time`) ? Date.parse(moment(formData.get(`event-start-time`), `DD-MM-YYYY LT`).format()) : Date.parse(now);
-  const endTime = formData.get(`event-end-time`) ? Date.parse(moment(formData.get(`event-end-time`), `DD-MM-YYYY LT`).format()) : Date.parse(now);
-  return {
-    type: formData.get(`event-type`),
-    destination: formData.get(`event-destination`),
-    startTime,
-    endTime,
-    offers: [],
-    price: formData.get(`event-price`),
-  };
 };
 
 export default class EditEdit extends AbstractSmartComponent {
@@ -190,9 +171,12 @@ export default class EditEdit extends AbstractSmartComponent {
     this._submitButtonClickHandler = null;
     this._deleteButtonClickHandler = null;
     this._editCloseButtonClickHandler = null;
+    this._destinations = Store.getAllDestinations();
+    this._offers = Store.getOffers();
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
+    this.setDestinations(this._destinations);
   }
 
   getTemplate() {
@@ -204,6 +188,7 @@ export default class EditEdit extends AbstractSmartComponent {
     this.setSubmitHandler(this._submitButtonClickHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
+    this.setDestinations(this._destinations);
   }
 
   rerender() {
@@ -214,9 +199,7 @@ export default class EditEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
-    const formData = new FormData(form);
-
-    return parseFormData(formData);
+    return new FormData(form);
   }
 
   _applyFlatpickr() {
@@ -246,17 +229,16 @@ export default class EditEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__type-list`)
       .addEventListener(`change`, (evt) => {
+        const index = this._offers.findIndex((it) => it.type === evt.target.value);
         this._event.type = evt.target.value;
-        this._event.offers = generateOptions(additionalOptions);
-
+        this._event.offers = this._offers[index].offers;
         this.rerender();
       });
 
     element.querySelector(`.event__input--destination`)
       .addEventListener(`change`, (evt) => {
-        this._event.destination = evt.target.value;
-        this._event.description = generateDescription(tripDescription);
-
+        const index = this._destinations.findIndex((it) => it.name === evt.target.value);
+        this._event.destination = this._destinations[index];
         this.rerender();
       });
 
@@ -295,5 +277,17 @@ export default class EditEdit extends AbstractSmartComponent {
       .addEventListener(`click`, handler);
 
     this._deleteButtonClickHandler = handler;
+  }
+
+  setDestinations(allDestinations) {
+    const container = this.getElement().querySelector(`#destination-list-1`);
+    if (allDestinations !== null) {
+      container.innerHTML = ``;
+      allDestinations.map((it) => {
+        const opt = document.createElement(`option`);
+        container.append(opt);
+        opt.value = it.name;
+      });
+    }
   }
 }
