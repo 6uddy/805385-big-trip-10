@@ -12,7 +12,11 @@ const getTripDates = (cards) => {
 };
 
 const setDateTimeAttr = (date) => {
-  return moment(date).format(moment.HTML5_FMT.DATETIME_LOCAL);
+  return moment(date).toISOString();
+};
+
+const formatAfterFlatpickr = (date) => {
+  return moment(date, `DD/MM/YYYY HH:mm`);
 };
 
 const getDuration = (start, end) => {
@@ -37,5 +41,5 @@ const isFutureDate = (startTime, date) => {
   return startTime >= Date.parse(date);
 };
 
-export {formatTime, getDuration, setDateTimeAttr, isOverdueDate, isFutureDate, getTripDates};
+export {formatTime, getDuration, setDateTimeAttr, isOverdueDate, isFutureDate, getTripDates, formatAfterFlatpickr};
 

@@ -37,7 +37,6 @@ export default class TripController {
     this._pointModel = pointModel;
     this._api = api;
 
-
     this._showedEventControllers = [];
     this._creatingEvent = null;
     this._isSortedByDefault = true;
@@ -101,18 +100,38 @@ export default class TripController {
         pointController.destroy();
         this._updateEvents();
       } else {
-        this._pointModel.addPoint(newData);
+        this._api.createPoint(newData)
+          .then((pointModel) => {
+            this._pointModel.addPoint(pointModel);
 
-        this._showedEventControllers = [].concat(pointController, this._showedEventControllers);
-        this._updateEvents();
+            this._showedEventControllers = [].concat(pointController, this._showedEventControllers);
+            this._updateEvents();
+          })
+          .catch(() => {
+            pointController.shake();
+          });
       }
     } else if (newData === null) {
-      this._pointModel.removePoint(oldData.id);
+      this._api.deletePoint(oldData.id)
+        .then(() => {
+          this._pointModel.removePoint(oldData.id);
+          this._updateEvents();
+        })
+        .catch(() => {
+          pointController.shake();
+        });
     } else {
-      const isSuccess = this._pointModel.updatePoint(oldData.id, newData);
-      if (isSuccess) {
-        pointController.render(newData, PointControllerMode.DEFAULT);
-      }
+      this._api.updatePoint(oldData.id, newData)
+        .then((pointModel) => {
+          const isSuccess = this._pointModel.updatePoint(oldData.id, pointModel);
+          if (isSuccess) {
+            pointController.render(pointModel, PointControllerMode.DEFAULT);
+            this._updateEvents();
+          }
+        })
+        .catch(() => {
+          pointController.shake();
+        });
     }
   }
 
