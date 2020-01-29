@@ -2,10 +2,10 @@ import {events} from "./mock/event";
 import {MenuItem} from "./components/menu";
 import {render, RenderPosition} from "./utils/render";
 
-import Menu from "./components/menu"
-import Route from "./components/route"
-import TripEvents from "./components/trip-events"
-import Statistics from "./components/statistics"
+import Menu from "./components/menu";
+import Route from "./components/route";
+import TripEvents from "./components/trip-events";
+import Statistics from "./components/statistics";
 import TripController from "./controller/trip-controller";
 import FilterController from "./controller/filter-controller";
 import PointModel from "./models/points";
