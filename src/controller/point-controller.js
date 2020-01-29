@@ -3,6 +3,9 @@ import {render, RenderPosition, replace, remove} from "../utils/render";
 import Event from "../components/event";
 import EditEdit from "../components/edit-event";
 import Point from "../models/point";
+import {formatDateAfterPick} from "../utils/common";
+
+const SHAKE_ANIMATION_TIMEOUT = 500;
 
 const Mode = {
   DEFAULT: `default`,
@@ -21,7 +24,7 @@ const EmptyEvent = {
   isFavorite: false
 };
 
-const parseFormData = (formData) => {
+const parseFormData = (formData, offers) => {
   const desc = document.querySelector(`.event__destination-description`).textContent;
   let pictures = [];
   document.querySelectorAll(`.event__photo`).forEach((it) => {
@@ -40,9 +43,9 @@ const parseFormData = (formData) => {
         };
       }),
     },
-    'date_from': formData.get(`event-start-time`),
-    'date_to': formData.get(`event-end-time`),
-    'offers': formData.getAll(`event-offer`),
+    'date_from': formatDateAfterPick(formData.get(`event-start-time`)),
+    'date_to': formatDateAfterPick(formData.get(`event-end-time`)),
+    'offers': offers,
     'base_price': Number(formData.get(`event-price`)),
     'is_favorite': Boolean(formData.get(`event-favorite`))
   });
@@ -76,19 +79,39 @@ export default class PointController extends AbstractComponent {
     });
 
     this._eventEditComponent.setEditCloseButtonClickHandler(() => {
+      this._eventEditComponent.setData({
+        saveButtonText: `Saving...`,
+      });
+
+      const pointData = this._eventEditComponent.getData();
+      const data = parseFormData(pointData.form, pointData.offers);
+
+      this._onDataChange(this, event, data);
       this._replaceEditToEvent();
-      document.addEventListener(`keydown`, this._onEscKeyDown);
+
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const formData = this._eventEditComponent.getData();
-      const data = parseFormData(formData);
+
+      this._eventEditComponent.setData({
+        saveButtonText: `Saving...`,
+      });
+
+      const pointData = this._eventEditComponent.getData();
+      const data = parseFormData(pointData.form, pointData.offers);
       this._onDataChange(this, event, data);
       this._replaceEditToEvent();
     });
 
-    this._eventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));
+    this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      this._eventEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
+
+      this._onDataChange(this, event, null);
+    });
 
     switch (mode) {
       case Mode.DEFAULT:
@@ -107,9 +130,29 @@ export default class PointController extends AbstractComponent {
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
+        this._eventEditComponent.deleteEventCloseButton();
+        this._eventEditComponent.setData({
+          deleteButtonText: `Cancel`,
+        });
         break;
     }
   }
+
+  shake() {
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+      this._eventComponent.getElement().style.animation = ``;
+
+      this._eventEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
 
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {

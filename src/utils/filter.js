@@ -1,4 +1,4 @@
-import {isFutureDate, isOverdueDate} from "./common";
+import {isFutureDate, isPastDate} from "./common";
 
 export const FilterType = {
   EVERYTHING: `everything`,
@@ -18,7 +18,7 @@ const getPastEvents = (events, date) => {
   return events.filter((event) => {
     const startTime = event.startTime;
 
-    return isOverdueDate(startTime, date);
+    return isPastDate(startTime, date);
   });
 };
 

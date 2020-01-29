@@ -3,23 +3,23 @@ import moment from "moment";
 const HOUR_PER_MS = 3600000;
 const DAY_PER_MS = 86400000;
 
-const formatTime = (date) => {
+export const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
 
-const getTripDates = (cards) => {
+export const getTripDates = (cards) => {
   return new Set(cards.map((it) => new Date(it.startTime).toDateString()));
 };
 
-const setDateTimeAttr = (date) => {
+export const setDateTime = (date) => {
   return moment(date).toISOString();
 };
 
-const formatAfterFlatpickr = (date) => {
+export const formatDateAfterPick = (date) => {
   return moment(date, `DD/MM/YYYY HH:mm`);
 };
 
-const getDuration = (start, end) => {
+export const getDuration = (start, end) => {
   let startTime = moment(start);
   let endTime = moment(end);
   const diff = endTime.diff(startTime);
@@ -33,13 +33,10 @@ const getDuration = (start, end) => {
   }
 };
 
-const isOverdueDate = (startTime, date) => {
+export const isPastDate = (startTime, date) => {
   return startTime < Date.parse(date);
 };
 
-const isFutureDate = (startTime, date) => {
+export const isFutureDate = (startTime, date) => {
   return startTime >= Date.parse(date);
 };
-
-export {formatTime, getDuration, setDateTimeAttr, isOverdueDate, isFutureDate, getTripDates, formatAfterFlatpickr};
-

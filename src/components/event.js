@@ -1,4 +1,4 @@
-import {formatTime, getDuration, setDateTimeAttr} from "../utils/common";
+import {formatTime, getDuration, setDateTime} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const createOfferMarkup = (offers) => {
@@ -28,9 +28,9 @@ const createEventTemplate = (event) => {
           <h3 class="event__title">${event.type} to ${event.destination.name}</h3>
           <div class="event__schedule">
             <p class="event__time">
-              <time class="event__start-time" datetime="${setDateTimeAttr(event.startTime)}">${formatTime(event.startTime)}</time>
+              <time class="event__start-time" datetime="${setDateTime(event.startTime)}">${formatTime(event.startTime)}</time>
               &mdash;
-              <time class="event__end-time" datetime="${setDateTimeAttr(event.endTime)}">${formatTime(event.endTime)}</time>
+              <time class="event__end-time" datetime="${setDateTime(event.endTime)}">${formatTime(event.endTime)}</time>
             </p>
             <p class="event__duration">${getDuration(event.startTime, event.endTime)}</p>
           </div>
