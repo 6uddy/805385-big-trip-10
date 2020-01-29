@@ -7,8 +7,8 @@ export const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
 
-export const getTripDates = (cards) => {
-  return new Set(cards.map((it) => new Date(it.startTime).toDateString()));
+export const getTripDates = (events) => {
+  return new Set(events.map((it) => new Date(it.startTime).toDateString()));
 };
 
 export const setDateTime = (date) => {

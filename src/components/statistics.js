@@ -19,14 +19,14 @@ const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
 };
 
-const calcPriceByType = (cards, type) => {
-  return cards
+const calcPriceByType = (events, type) => {
+  return events
     .filter((it) => it.type === type)
     .reduce((sum, it) => sum + it.price, 0);
 };
 
-const calcTransportTypeCount = (cards, type) => {
-  return cards
+const calcTransportTypeCount = (events, type) => {
+  return events
     .filter((it) => it.type === type)
     .reduce((sum) => sum + 1, 0);
 };
@@ -39,20 +39,20 @@ const getDuration = (start, end) => {
   return moment(diff);
 };
 
-const calcTimeSpent = (cards, destination) => {
-  return cards
+const calcTimeSpent = (events, destination) => {
+  return events
     .filter((it) => it.destination.name === destination)
     .reduce((sum, it) => sum + getDuration(it.startTime, it.endTime), 0);
 };
 
-const renderPriceChart = (priceCtx, cards) => {
-  const types = cards
-    .map((card) => card.type)
+const renderPriceChart = (priceCtx, events) => {
+  const types = events
+    .map((event) => event.type)
     .filter(getUniqItems);
   const data = types.map((type) => {
     return {
       type,
-      price: calcPriceByType(cards, type)
+      price: calcPriceByType(events, type)
     };
   })
     .sort((a, b) => b.price - a.price);
@@ -127,11 +127,11 @@ const renderPriceChart = (priceCtx, cards) => {
   });
 };
 
-const renderTransportChart = (transportCtx, cards) => {
+const renderTransportChart = (transportCtx, events) => {
   const data = Transport.map((type) => {
     return {
       type,
-      count: calcTransportTypeCount(cards, type)
+      count: calcTransportTypeCount(events, type)
     };
   })
     .sort((a, b) => b.count - a.count);
@@ -206,14 +206,14 @@ const renderTransportChart = (transportCtx, cards) => {
   });
 };
 
-const renderTimeSpentChart = (timeSpentCtx, cards) => {
-  const destinations = cards
-    .map((card) => card.destination.name)
+const renderTimeSpentChart = (timeSpentCtx, events) => {
+  const destinations = events
+    .map((event) => event.destination.name)
     .filter(getUniqItems);
   const data = destinations.map((destination) => {
     return {
       destination,
-      duration: moment(calcTimeSpent(cards, destination)).format(`HH`)
+      duration: moment(calcTimeSpent(events, destination)).format(`HH`)
     };
   })
     .sort((a, b) => b.duration - a.duration);
@@ -309,9 +309,9 @@ const createStatsTemplate = () => {
 };
 
 export default class Statistics extends AbstractSmartComponent {
-  constructor(cards) {
+  constructor(events) {
     super();
-    this._cards = cards;
+    this._events = events;
 
     this._priceChart = null;
     this._transportChart = null;
@@ -327,13 +327,13 @@ export default class Statistics extends AbstractSmartComponent {
   show() {
     super.show();
 
-    this.rerender(this._cards);
+    this.rerender(this._events);
   }
 
   recoveryListeners() {}
 
-  rerender(cards) {
-    this._cards = cards;
+  rerender(events) {
+    this._events = events;
 
     super.rerender();
 
@@ -349,9 +349,9 @@ export default class Statistics extends AbstractSmartComponent {
 
     this._resetCharts();
 
-    this._priceChart = renderPriceChart(priceCtx, this._cards.getPoints());
-    this._transportChart = renderTransportChart(transportCtx, this._cards.getPoints());
-    this._timeSpentChart = renderTimeSpentChart(timeSpentCtx, this._cards.getPoints());
+    this._priceChart = renderPriceChart(priceCtx, this._events.getPoints());
+    this._transportChart = renderTransportChart(transportCtx, this._events.getPoints());
+    this._timeSpentChart = renderTimeSpentChart(timeSpentCtx, this._events.getPoints());
   }
 
   _resetCharts() {
