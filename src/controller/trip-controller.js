@@ -65,12 +65,12 @@ export default class TripController {
     render(container, this._tripList, RenderPosition.BEFOREEND);
 
     this._showedEventControllers = renderEvents(
-      this._tripList,
-      this._pointModel.getPoints(),
-      this._onDataChange,
-      this._onViewChange,
-      PointControllerMode.DEFAULT,
-      this._isSortedByDefault
+        this._tripList,
+        this._pointModel.getPoints(),
+        this._onDataChange,
+        this._onViewChange,
+        PointControllerMode.DEFAULT,
+        this._isSortedByDefault
     );
 
     this._sort.setSortTypeChangeHandler(this._onSortTypeChange);
@@ -160,12 +160,12 @@ export default class TripController {
 
     this._removeEvents();
     this._showedEventControllers = renderEvents(
-      this._tripList,
-      sortedEvents,
-      this._onDataChange,
-      this._onViewChange,
-      PointControllerMode.DEFAULT,
-      this._isSortedByDefault
+        this._tripList,
+        sortedEvents,
+        this._onDataChange,
+        this._onViewChange,
+        PointControllerMode.DEFAULT,
+        this._isSortedByDefault
     );
   }
 
@@ -178,12 +178,12 @@ export default class TripController {
   _updateEvents() {
     this._removeEvents();
     this._showedEventControllers = renderEvents(
-      this._tripList,
-      this._pointModel.getPoints(),
-      this._onDataChange,
-      this._onViewChange,
-      PointControllerMode.DEFAULT,
-      this._isSortedByDefault
+        this._tripList,
+        this._pointModel.getPoints(),
+        this._onDataChange,
+        this._onViewChange,
+        PointControllerMode.DEFAULT,
+        this._isSortedByDefault
     );
   }
 

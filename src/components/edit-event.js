@@ -1,8 +1,7 @@
 import flatpickr from "flatpickr";
 import AbstractSmartComponent from "./abstract-smart-component";
-import moment from "moment";
-import {additionalOptions, generateDescription, generateOptions, tripDescription} from "../mock/event";
 import Store from "../models/store";
+import {setDateTime} from "../utils/common";
 
 
 const DefaultData = {
